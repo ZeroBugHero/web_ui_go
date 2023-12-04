@@ -1,0 +1,55 @@
+url: "/login"
+steps:
+  - locator:
+      name: 登录
+      type: id # 定位方式
+      exact: true # 是否精确匹配
+      values:
+        - "#username" # 定位值
+      operation:
+        action:
+          input: # 输入操作
+            "admin" # 操作值
+          interactive: # 交互方式 click, clear, enter,hover,right_click,double_click,drag_and_drop,mouse_move
+            "click"
+          coordinates: # 坐标
+            - 200
+            - 200
+            - 200
+            - 200
+      timeout: 10 # 超时时间/秒
+    assert:
+      name: title断言
+      type: title
+      exact: true # 是否精确匹配
+      values: [ ]
+      check:
+        type: equal
+        expect: "登录"
+      continue: false # 失败后是否继续执行
+      timeout: 10 # 超时时间/秒
+
+  - locator:
+      name: xpath定位
+      type: xpath # 定位方式
+      exact: true # 是否精确匹配
+      values:
+        - "#username" # 定位值
+      operation:
+        action:
+          input: # 操作方式
+            - "admin" # 操作值
+          interactive: # 交互方式 click, clear, enter
+            - "click"
+      timeout: 10 # 超时时间/秒
+    assert:
+      name: title断言
+      type: id
+      exact: false # 是否精确匹配
+      values:
+        - "#username" # 定位值
+      check:
+        type: equal
+        expect: "登录"
+      continue: true # 失败后是否继续执行
+      timeout: 10 # 超时时间/秒

@@ -1,0 +1,14 @@
+base_url: http://localhost:3000
+headless: false
+video:
+  method: faild
+  path: ./video
+trace:
+  method: faild
+  path: ./trace
+
+report:
+  path: ./report
+
+
+browser: chromium
