@@ -46,8 +46,10 @@ steps:
       name: title断言
       type: id
       exact: false # 是否精确匹配
-      values:
-        - "#username" # 定位值
+      element_locator:
+        values:
+          - "#username" # 定位值
+        index: 0
       check:
         type: equal
         expect: "登录"

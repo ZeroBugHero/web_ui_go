@@ -33,17 +33,22 @@ type Action struct {
 
 // Assert 是用于断言的结构体
 type Assert struct {
-	Name     string   `yaml:"name" json:"name"`
-	Type     string   `yaml:"type" json:"type"`
-	Exact    bool     `yaml:"exact" json:"exact"`
-	Values   []string `yaml:"values" json:"values"`
-	Check    Check    `yaml:"check" json:"check"`
-	Continue bool     `yaml:"continue" json:"continue"`
-	Timeout  int      `yaml:"timeout" json:"timeout"`
+	Name           string         `yaml:"name" json:"name"`
+	Type           string         `yaml:"type" json:"type"` // 断言类型 css, role, test-id, text, placeholder, label, xpath
+	Exact          bool           `yaml:"exact" json:"exact"`
+	ElementLocator ElementLocator `yaml:"element_locator" json:"element_locator"` // 元素定位器
+	Check          Check          `yaml:"check" json:"check"`                     // 断言检查
+	Continue       bool           `yaml:"continue" json:"continue"`               // 断言失败是否继续
+	Timeout        int            `yaml:"timeout" json:"timeout"`                 // 断言超时时间
 }
 
 // Check 是用于检查的结构体
 type Check struct {
 	Type   string `yaml:"type" json:"type"`     // 断言方式 equal, not_equal, contains, not_contains, greater_than, less_than
 	Expect string `yaml:"expect" json:"expect"` // 期望值
+}
+
+type ElementLocator struct {
+	Values []string `yaml:"values" json:"values"` // 元素定位器的值
+	Index  int      `yaml:"index" json:"index"`   // 下标
 }

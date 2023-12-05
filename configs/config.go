@@ -10,7 +10,7 @@ import (
 var config *models.Config
 
 func ConfigLoad() *models.Config {
-	readFile, err := os.ReadFile("../data/config/conf.yml")
+	readFile, err := os.ReadFile("/Users/pizazz/Desktop/learn/code/web_ui/web_ui_go/data/config/conf.yml")
 	if err != nil {
 		log.Fatalf("读取配置文件失败: %v", err)
 	}
