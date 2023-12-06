@@ -32,7 +32,7 @@ func (l *LocatorTestStep) CreateAndReturnNewPage() playwright.Page {
 // PerformActionBasedOnLocator 根据定位器执行动作
 func PerformActionBasedOnLocator(page playwright.Page, locator models.Locator) {
 	// 参数验证
-	if page == nil || CountLocatorValues(locator) == 0 {
+	if page == nil || countLocatorValues(locator) == 0 {
 		log.Error().Msg("无效的参数")
 		return
 	}
@@ -67,27 +67,55 @@ func ExecuteInteractiveAction(element playwright.Locator, locator models.Locator
 		log.Error().Msg("定位器为空")
 		return
 	}
-	// 参考assert.go中的assertBasedOnCheckType函数，减少switch case的嵌套 todo
 
+	log.Info().Msgf("执行动作: %s", locator.Operation.Action.Interactive)
+	// 参考assert.go中的assertBasedOnCheckType函数，减少switch case的嵌套 todo
 	switch locator.Operation.Action.Interactive {
 	case "click":
-		element.Click()
+		clickAction(element, playwright.Float(locator.Timeout))
 	case "input":
-		element.Fill(locator.Operation.Action.Input)
+		inputAction(element, locator.Operation.Action.Input, playwright.Float(locator.Timeout))
 	case "enter":
-		element.Press(locator.Operation.Action.Interactive)
+		enterAction(element, locator.Operation.Action.Interactive, playwright.Float(locator.Timeout))
 	case "hover":
-		element.Hover()
+		hoverAction(element, playwright.Float(locator.Timeout))
 	case "right_click":
-		element.Click(playwright.LocatorClickOptions{Button: playwright.MouseButtonRight})
+		rightClickAction(element, playwright.Float(locator.Timeout))
 	case "double_click":
-		element.Dblclick()
+		doubleClickAction(element, playwright.Float(locator.Timeout))
 	// ... [其他动作] ...
 	default:
 		log.Warn().Msgf("未知动作: %s", locator.Operation.Action.Interactive)
 	}
 }
 
-func CountLocatorValues(step models.Locator) int {
+// 以下是具体动作的函数实现
+func clickAction(element playwright.Locator, timeout *float64) {
+	element.Click(playwright.LocatorClickOptions{Timeout: timeout})
+}
+
+func inputAction(element playwright.Locator, input string, timeout *float64) {
+	element.Fill(input, playwright.LocatorFillOptions{Timeout: timeout})
+}
+
+func enterAction(element playwright.Locator, key string, timeout *float64) {
+	element.Press(key, playwright.LocatorPressOptions{Timeout: timeout})
+}
+
+func hoverAction(element playwright.Locator, timeout *float64) {
+	element.Hover(playwright.LocatorHoverOptions{Timeout: timeout})
+}
+
+func rightClickAction(element playwright.Locator, timeout *float64) {
+	element.Click(playwright.LocatorClickOptions{Button: playwright.MouseButtonRight, Timeout: timeout})
+}
+
+func doubleClickAction(element playwright.Locator, timeout *float64) {
+	element.Dblclick(playwright.LocatorDblclickOptions{Timeout: timeout})
+}
+
+// ... [其他动作的函数实现] ...
+
+func countLocatorValues(step models.Locator) int {
 	return len(step.Values)
 }
