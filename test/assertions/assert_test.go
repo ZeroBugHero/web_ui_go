@@ -12,7 +12,7 @@ func TestAssertLocator(t *testing.T) {
 	page.Goto("http://localhost:8080/")
 	check := models.Check{
 		Type:   "eq",
-		Expect: "点击我",
+		Expect: []string{"点击我"},
 	}
 	locator := models.ElementLocator{
 		Values: []string{"my-button"},

@@ -24,30 +24,28 @@ func (t *CustomTestingT) Errorf(format string, args ...interface{}) {
 func AssertLocator(page playwright.Page, locator models.Assert) *CustomTestingT {
 	t := new(CustomTestingT)
 
-	if page == nil || CountLocatorValues(locator) == 0 {
+	if page == nil || countLocatorValues(locator) == 0 {
 		t.Errorf("Invalid parameters")
 		return t
 	}
 
 	innerTexts, err := getInnerTextsBasedOnLocatorType(page, locator)
 	if err != nil || len(innerTexts) == 0 {
-		log.Error().Err(err).Msg("获取文本失败")
+		// 错误处理
 		t.Errorf("Error fetching texts: %v", err)
 		return t
 	}
-	if locator.ElementLocator.Index < 0 {
-		log.Info().Msg("索引不能为负数，将其设置为0。")
-		locator.ElementLocator.Index = 0
-		t.FailMessage = "索引不能为负数，将其设置为0。"
-		return t
-	} else if locator.ElementLocator.Index == 0 || locator.ElementLocator.Index == 1 {
-		innerText := innerTexts[0]
-		assertBasedOnCheckType(t, innerText, locator.Check)
+
+	// 检查索引是否在innerTexts数组范围内
+	if locator.ElementLocator.Index > 0 && locator.ElementLocator.Index < len(locator.Check.Expect) {
+		// 检查特定索引处的元素
+		innerText := innerTexts[locator.ElementLocator.Index]
+		assertBasedOnCheckType(t, innerText, locator.Check.Expect[locator.ElementLocator.Index], locator.Check)
 	} else {
-		// 循环断言
-		for i := 0; i < locator.ElementLocator.Index; i++ {
+		// 根据locator.Check.Expect的长度进行匹配
+		for i := 0; i < len(locator.Check.Expect); i++ {
 			innerText := innerTexts[i]
-			assertBasedOnCheckType(t, innerText, locator.Check)
+			assertBasedOnCheckType(t, innerText, locator.Check.Expect[i], locator.Check)
 		}
 	}
 	// 根据断言类型执行断言检查
@@ -79,15 +77,15 @@ func getInnerTextsBasedOnLocatorType(page playwright.Page, locator models.Assert
 }
 
 // assertBasedOnCheckType 根据断言类型执行断言检查
-func assertBasedOnCheckType(t *CustomTestingT, innerTexts interface{}, check models.Check) {
+func assertBasedOnCheckType(t *CustomTestingT, innerTexts, expect interface{}, check models.Check) {
 	if assertionFunc, ok := builtin.Assertions[check.Type]; ok {
 		// 调用断言函数
-		assertionFunc(t, innerTexts, check.Expect)
+		assertionFunc(t, innerTexts, expect)
 	} else {
 		// 如果没有找到对应的断言类型
 		t.Errorf("不支持的断言类型: %s", check.Type)
 	}
 }
-func CountLocatorValues(assert models.Assert) int {
+func countLocatorValues(assert models.Assert) int {
 	return len(assert.ElementLocator.Values)
 }
