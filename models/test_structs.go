@@ -12,11 +12,11 @@ type TestStep struct {
 // Locator 是用于定位元素的结构体
 type Locator struct {
 	Name      string    `yaml:"name" json:"name"`
-	Type      string    `yaml:"type" json:"type"`
+	Type      string    `yaml:"type" json:"type"` // 定位器类型 css, role, test-id, text, placeholder, label, xpath
 	Exact     bool      `yaml:"exact" json:"exact"`
-	Values    []string  `yaml:"values" json:"values"`
+	Values    []string  `yaml:"values" json:"values"` // 定位器的值
 	Operation Operation `yaml:"operation" json:"operation"`
-	Timeout   int       `yaml:"timeout" json:"timeout"`
+	Timeout   float64   `yaml:"timeout" json:"timeout"`
 }
 
 // Operation 是用于操作元素的结构体
@@ -27,7 +27,7 @@ type Operation struct {
 // Action 是用于操作元素的结构体
 type Action struct {
 	Input       string `yaml:"input" json:"input"`
-	Interactive string `yaml:"interactive" json:"interactive"`
+	Interactive string `yaml:"interactive" json:"interactive"` // 操作类型 click, input, enter, select, scroll, hover, right_click, double_click, drag_and_drop, drag_and_drop_by_offset, press, type, upload_file
 	Coordinates []int  `yaml:"coordinates" json:"coordinates"`
 }
 
@@ -44,8 +44,8 @@ type Assert struct {
 
 // Check 是用于检查的结构体
 type Check struct {
-	Type   string `yaml:"type" json:"type"`     // 断言方式 equal, not_equal, contains, not_contains, greater_than, less_than
-	Expect string `yaml:"expect" json:"expect"` // 期望值
+	Type   string   `yaml:"type" json:"type"`     // 断言方式 equal, not_equal, contains, not_contains, greater_than, less_than
+	Expect []string `yaml:"expect" json:"expect"` // 期望值
 }
 
 type ElementLocator struct {
