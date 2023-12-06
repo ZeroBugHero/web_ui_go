@@ -1,6 +1,6 @@
 module web_ui_go
 
-go 1.19
+go 1.21
 
 require (
 	github.com/playwright-community/playwright-go v0.3900.1

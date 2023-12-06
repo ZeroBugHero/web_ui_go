@@ -1,4 +1,4 @@
-url: "/login"
+uri: "/login"
 steps:
   - locator:
       name: 登录
