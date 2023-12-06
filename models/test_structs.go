@@ -5,8 +5,9 @@ import "time"
 // TestStep 是用于单个测试步骤的结构体
 type TestStep struct {
 	StartTime time.Time // 默认为当前时间 time.Now()
-	Locator   Locator   `yaml:"locator" json:"locator"`
-	Assert    Assert    `yaml:"assert" json:"assert"`
+	Locator   *Locator  `yaml:"locator" json:"locator"`
+	Assert    *Assert   `yaml:"assert" json:"assert"`
+	Uri       string    `yaml:"uri" json:"uri"`
 }
 
 // Locator 是用于定位元素的结构体
