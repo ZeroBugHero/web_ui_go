@@ -1,10 +1,10 @@
 package configs
 
 import (
+	"github.com/ZeroBugHero/web_ui_go/models"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"
-	"web_ui_go/models"
 )
 
 var config *models.Config

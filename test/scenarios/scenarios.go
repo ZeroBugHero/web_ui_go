@@ -1,12 +1,12 @@
 package scenarios
 
 import (
+	"github.com/ZeroBugHero/web_ui_go/launch"
+	"github.com/ZeroBugHero/web_ui_go/models"
+	"github.com/ZeroBugHero/web_ui_go/test/assertions"
+	"github.com/ZeroBugHero/web_ui_go/test/locators"
 	"github.com/playwright-community/playwright-go"
 	"github.com/rs/zerolog/log"
-	"web_ui_go/launch"
-	"web_ui_go/models"
-	"web_ui_go/test/assertions"
-	"web_ui_go/test/locators"
 )
 
 func Run(steps []models.TestStep, uri string) {

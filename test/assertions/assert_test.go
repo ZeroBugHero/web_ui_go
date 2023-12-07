@@ -1,9 +1,9 @@
 package assertions
 
 import (
+	"github.com/ZeroBugHero/web_ui_go/launch"
+	"github.com/ZeroBugHero/web_ui_go/models"
 	"testing"
-	"web_ui_go/launch"
-	"web_ui_go/models"
 )
 
 func TestAssertLocator(t *testing.T) {

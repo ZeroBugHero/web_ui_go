@@ -1,4 +1,4 @@
-module web_ui_go
+module github.com/ZeroBugHero/web_ui_go
 
 go 1.21
 

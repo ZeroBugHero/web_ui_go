@@ -1,9 +1,9 @@
 package scenarios
 
 import (
+	"github.com/ZeroBugHero/web_ui_go/models"
 	"testing"
 	"time"
-	"web_ui_go/models"
 )
 
 func TestRun(t *testing.T) {

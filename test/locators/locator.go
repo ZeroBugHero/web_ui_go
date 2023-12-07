@@ -1,11 +1,11 @@
 package locators
 
 import (
+	"github.com/ZeroBugHero/web_ui_go/launch"
+	"github.com/ZeroBugHero/web_ui_go/models"
 	"github.com/playwright-community/playwright-go"
 	"github.com/rs/zerolog/log"
 	"time"
-	"web_ui_go/launch"
-	"web_ui_go/models"
 )
 
 // LocatorTestStep 定位器

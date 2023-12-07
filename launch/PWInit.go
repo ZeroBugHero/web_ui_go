@@ -1,10 +1,10 @@
 package launch
 
 import (
+	"github.com/ZeroBugHero/web_ui_go/configs"
+	"github.com/ZeroBugHero/web_ui_go/models"
 	"github.com/playwright-community/playwright-go"
 	"sync"
-	"web_ui_go/configs"
-	"web_ui_go/models"
 )
 
 var (
