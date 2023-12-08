@@ -93,6 +93,9 @@ func getInnerTextsBasedOnLocatorType(page playwright.Page, locator models.Assert
 		return page.GetByLabel(locator.ElementLocator.Values[0], playwright.PageGetByLabelOptions{Exact: playwright.Bool(locator.Exact)}).AllInnerTexts()
 	case "xpath":
 		return page.Locator(locator.ElementLocator.Values[0]).AllInnerTexts()
+	case "title":
+		title, err := page.Title()
+		return []string{title}, err
 	default:
 		return nil, errors.New("不支持的定位器类型")
 	}
@@ -109,6 +112,9 @@ func assertBasedOnCheckType(t *CustomTestingT, innerTexts, expect interface{}, c
 	}
 }
 func countLocatorValues(assert models.Assert) int {
+	if assert.Type == "title" {
+		return 1
+	}
 	return len(assert.ElementLocator.Values)
 }
 

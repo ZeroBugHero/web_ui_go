@@ -12,15 +12,15 @@ func TestAssertLocator(t *testing.T) {
 	page.Goto("http://localhost:8080/")
 	check := models.Check{
 		Type:   "eq",
-		Expect: []string{"点击我"},
+		Expect: []string{"my-vue-project"},
 	}
 	locator := models.ElementLocator{
-		Values: []string{"my-button"},
+		Values: []string{},
 		Index:  -1,
 	}
 	assert := models.Assert{
 		Name:           "aa",
-		Type:           "test-id",
+		Type:           "title",
 		Exact:          false,
 		ElementLocator: locator,
 		Check:          check,
