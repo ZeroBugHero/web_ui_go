@@ -36,7 +36,7 @@ func TestRun(t *testing.T) {
 		Exact:          false,
 		ElementLocator: elementLocator,
 		Check:          check,
-		Continue:       false,
+		Continue:       true,
 		Timeout:        0,
 	}
 	step := models.TestStep{

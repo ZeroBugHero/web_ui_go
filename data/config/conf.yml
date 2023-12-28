@@ -1,14 +1,18 @@
 base_url: http://localhost:8080
 headless: false
 video:
-  method: faild
+  method: failed
   path: ./video
 trace:
-  method: faild
+  method: failed
   path: ./trace
 
 report:
   path: ./report
+
+screenshot:
+  path: ./screenshot
+  method: failed
 
 
 browser: chromium

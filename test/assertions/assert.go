@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ZeroBugHero/web_ui_go/internal/builtin"
 	"github.com/ZeroBugHero/web_ui_go/models"
+	"github.com/ZeroBugHero/web_ui_go/test/reports"
 	"github.com/playwright-community/playwright-go"
 	"github.com/rs/zerolog/log"
 	"slices"
@@ -15,8 +16,8 @@ import (
 // CustomTestingT 用于存储失败的断言信息
 type CustomTestingT struct {
 	FailMessage string
-	Expect      interface{}
 	Actual      interface{}
+	Expect      interface{}
 }
 
 // Errorf 记录断言失败的简略信息
@@ -26,8 +27,11 @@ func (t *CustomTestingT) Errorf(format string, args ...interface{}) {
 }
 
 // AssertLocator 根据定位器执行断言
-func AssertLocator(page playwright.Page, locator models.Assert) *CustomTestingT {
+func AssertLocator(page playwright.Page, locator models.Assert, n int) *CustomTestingT {
 	t := new(CustomTestingT)
+	if t.FailMessage == "" {
+		t.FailMessage = "断言成功"
+	} // 断言成功默认信息
 	if page == nil || countLocatorValues(locator) == 0 {
 		t.Errorf("Invalid parameters")
 		return t
@@ -37,6 +41,21 @@ func AssertLocator(page playwright.Page, locator models.Assert) *CustomTestingT 
 		err := ValidateWithPlaywright(page, locator)
 		if err != nil {
 			t.Errorf("Error validating with playwright: %v", err)
+			validatorStatic := reports.ValidatorStatic{
+				Screenshot: "",
+				Video:      "",
+				Trace:      "",
+			}
+			result := reports.Validator{
+				Id:              0,
+				Type:            locator.Check.Type,
+				Locator:         locator.ElementLocator.Values[0],
+				Expect:          locator.Check.Expect,
+				Actual:          nil,
+				Message:         err.Error(),
+				ValidatorStatic: validatorStatic,
+			}
+			result.AddResult()
 			return t
 		}
 		return t
@@ -45,6 +64,21 @@ func AssertLocator(page playwright.Page, locator models.Assert) *CustomTestingT 
 	if err != nil || len(innerTexts) == 0 {
 		// 错误处理
 		t.Errorf("Error fetching texts: %v", err)
+		validatorStatic := reports.ValidatorStatic{
+			Screenshot: "",
+			Video:      "",
+			Trace:      "",
+		}
+		result := reports.Validator{
+			Id:              0,
+			Type:            locator.Check.Type,
+			Locator:         locator.ElementLocator.Values[0],
+			Expect:          locator.Check.Expect,
+			Actual:          nil,
+			Message:         err.Error(),
+			ValidatorStatic: validatorStatic,
+		}
+		result.AddResult()
 		return t
 	} else {
 		// 检查索引是否在innerTexts数组范围内
@@ -52,25 +86,51 @@ func AssertLocator(page playwright.Page, locator models.Assert) *CustomTestingT 
 			// 检查特定索引处的元素
 			innerText := innerTexts[locator.ElementLocator.Index]
 			assertBasedOnCheckType(t, innerText, locator.Check.Expect[locator.ElementLocator.Index], locator.Check)
-			t.Actual = map[string]interface{}{"Actual": innerText}
-			t.Expect = map[string]interface{}{"Expect": locator.Check.Expect[locator.ElementLocator.Index]}
+			validatorStatic := reports.ValidatorStatic{
+				Screenshot: "",
+				Video:      "",
+				Trace:      "",
+			}
+			result := reports.Validator{
+				Id:              0,
+				Type:            locator.Check.Type,
+				Locator:         locator.ElementLocator.Values[0],
+				Expect:          locator.Check.Expect,
+				Actual:          innerText,
+				Message:         captureMessage(t.FailMessage),
+				ValidatorStatic: validatorStatic,
+			}
+			t.Actual = fmt.Sprintf("实际值:%v", innerText)
+			t.Expect = fmt.Sprintf("期望值:%v", locator.Check.Expect[locator.ElementLocator.Index])
+			result.AddResult()
 		} else {
 			// 根据locator.Check.Expect的长度进行匹配
 			for i := 0; i < len(locator.Check.Expect); i++ {
 				innerText := innerTexts[i]
 				assertBasedOnCheckType(t, innerText, locator.Check.Expect[i], locator.Check)
-				t.Actual = map[string]interface{}{"Actual": innerText}
-				t.Expect = map[string]interface{}{"Expect": locator.Check.Expect[i]}
+				validatorStatic := reports.ValidatorStatic{
+					Screenshot: "",
+					Video:      "",
+					Trace:      "",
+				}
+				result := reports.Validator{
+					Id:              0,
+					Type:            locator.Check.Type,
+					Locator:         locator.ElementLocator.Values[0],
+					Expect:          locator.Check.Expect,
+					Actual:          innerText,
+					Message:         captureMessage(t.FailMessage),
+					ValidatorStatic: validatorStatic,
+				}
+				t.Actual = fmt.Sprintf("实际值:%v", innerText)
+				t.Expect = fmt.Sprintf("期望值:%v", locator.Check.Expect[locator.ElementLocator.Index])
+				result.AddResult()
 			}
 		}
 		// 根据断言类型执行断言检查
-		log.Info().Msg(fmt.Sprintf("断言结束：%s", t))
-		startIndex := strings.Index(t.FailMessage, "Error:")
-		if startIndex != -1 {
-			// 从"Error:"开始截取
-			t.FailMessage = t.FailMessage[startIndex:]
-
-		}
+		//log.Debug().Msgf("详细断言失败的信息:%v", *t) //详细的断言失败日志打印
+		t.FailMessage = captureMessage(t.FailMessage)
+		log.Info().Msg(fmt.Sprintf("第%d次断言结束：%s", n, *t))
 		return t
 	}
 
@@ -150,4 +210,14 @@ func ValidateWithPlaywright(page playwright.Page, locator models.Assert) error {
 
 	}
 	return nil
+}
+
+// captureMessage 截取消息
+func captureMessage(message string) string {
+	startIndex := strings.Index(message, "Error:")
+	if startIndex != -1 {
+		// 从"Error:"开始截取
+		message = message[startIndex:]
+	}
+	return message
 }

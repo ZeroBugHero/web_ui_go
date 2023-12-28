@@ -23,7 +23,7 @@ func Run(steps []models.TestStep, uri string) {
 	defer launch.ClosePlaywright()
 
 	page.Goto(uri)
-
+	n := 0
 	for _, step := range steps {
 		// 执行定位操作，如果有的话
 		if step.Locator != nil {
@@ -32,12 +32,17 @@ func Run(steps []models.TestStep, uri string) {
 
 		// 执行断言检查，如果有的话
 		if step.Assert != nil {
-			testResult := assertions.AssertLocator(page, *step.Assert)
+			// 断言计数器,每次执行断言时加1
+			n += 1
+			testResult := assertions.AssertLocator(page, *step.Assert, n)
 			if testResult.FailMessage != "" {
-				log.Error().Msgf("断言失败：%s", testResult.FailMessage)
 				if !step.Assert.Continue {
+					log.Info().Msgf("断言失败,断言后不继续：%v", step.Assert.Continue)
 					return
 				}
+				log.Info().Msgf("断言失败,断言后继续：%v", step.Assert.Continue)
+			} else {
+				log.Info().Msgf("断言成功，继续后续步骤")
 			}
 		}
 	}
