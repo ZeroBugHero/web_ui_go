@@ -1,6 +1,7 @@
 package locators
 
 import (
+	"github.com/ZeroBugHero/web_ui_go/internal/builtin"
 	"github.com/ZeroBugHero/web_ui_go/launch"
 	"github.com/ZeroBugHero/web_ui_go/models"
 	"github.com/playwright-community/playwright-go"
@@ -58,63 +59,39 @@ func PerformActionBasedOnLocator(page playwright.Page, locator models.Locator) {
 	}
 
 	// 执行动作
-	ExecuteInteractiveAction(element, locator)
+	ExecuteInteractiveAction(element, element, locator, page)
+}
+
+// 在程序启动时对builtin.MouseOperationList进行排序和转换为map
+
+var MouseOperationSet map[string]bool
+
+func init() {
+	MouseOperationSet = make(map[string]bool)
+	for _, operation := range builtin.MouseOperationList {
+		MouseOperationSet[operation] = true
+	}
 }
 
 // ExecuteInteractiveAction 根据定位器执行相应动作
-func ExecuteInteractiveAction(element playwright.Locator, locator models.Locator) {
+func ExecuteInteractiveAction(element playwright.Locator, targetElement playwright.Locator, locator models.Locator, page playwright.Page) {
 	if element == nil {
 		log.Error().Msg("定位器为空")
 		return
 	}
-
 	log.Info().Msgf("执行动作: %s", locator.Operation.Action.Interactive)
-	// 参考assert.go中的assertBasedOnCheckType函数，减少switch case的嵌套 todo
-	switch locator.Operation.Action.Interactive {
-	case "click":
-		clickAction(element, playwright.Float(locator.Timeout))
-	case "input":
-		inputAction(element, locator.Operation.Action.Input, playwright.Float(locator.Timeout))
-	case "enter":
-		enterAction(element, locator.Operation.Action.Interactive, playwright.Float(locator.Timeout))
-	case "hover":
-		hoverAction(element, playwright.Float(locator.Timeout))
-	case "right_click":
-		rightClickAction(element, playwright.Float(locator.Timeout))
-	case "double_click":
-		doubleClickAction(element, playwright.Float(locator.Timeout))
-	// ... [其他动作] ...
-	default:
-		log.Warn().Msgf("未知动作: %s", locator.Operation.Action.Interactive)
+	// 判断locator.Operation.Action是否在MouseOperationSet中
+	if _, ok := MouseOperationSet[locator.Operation.Action.Interactive]; ok {
+		mouseOperation(element, targetElement, locator, page)
+	} else {
+		// 如果在映射中找到了对应的动作，执行该动作
+		if actionFunc, ok := actionFuncs[locator.Operation.Action.Interactive]; ok {
+			actionFunc(element, locator, &locator.Timeout)
+		} else {
+			log.Error().Msg("不支持的动作")
+		}
 	}
 }
-
-// 以下是具体动作的函数实现
-func clickAction(element playwright.Locator, timeout *float64) {
-	element.Click(playwright.LocatorClickOptions{Timeout: timeout})
-}
-
-func inputAction(element playwright.Locator, input string, timeout *float64) {
-	element.Fill(input, playwright.LocatorFillOptions{Timeout: timeout})
-}
-
-func enterAction(element playwright.Locator, key string, timeout *float64) {
-	element.Press(key, playwright.LocatorPressOptions{Timeout: timeout})
-}
-
-func hoverAction(element playwright.Locator, timeout *float64) {
-	element.Hover(playwright.LocatorHoverOptions{Timeout: timeout})
-}
-
-func rightClickAction(element playwright.Locator, timeout *float64) {
-	element.Click(playwright.LocatorClickOptions{Button: playwright.MouseButtonRight, Timeout: timeout})
-}
-
-func doubleClickAction(element playwright.Locator, timeout *float64) {
-	element.Dblclick(playwright.LocatorDblclickOptions{Timeout: timeout})
-}
-
-// ... [其他动作的函数实现] ...
 
 func countLocatorValues(step models.Locator) int {
 	return len(step.Values)

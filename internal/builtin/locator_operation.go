@@ -31,3 +31,7 @@ func LocatorPress(locator playwright.Locator, locatorType string) {
 func LocatorHover(locator playwright.Locator, locatorType string) {
 	locator.Hover()
 }
+
+// 定义一个映射，将动作名称映射到对应的执行函数
+
+var MouseOperationList = []string{"drag_and_drop", "drag_element", "scroll", "wheel", "hover", "right_click", "double_click", "click"}

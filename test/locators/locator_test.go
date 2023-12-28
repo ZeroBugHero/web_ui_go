@@ -10,7 +10,7 @@ func TestPerformActionBasedOnLocator(t *testing.T) {
 
 	operation := models.Operation{Action: models.Action{
 		Interactive: "click",
-		Coordinates: nil,
+		Coordinates: models.Coordinates{},
 	}}
 	locator := models.Locator{
 		Name:      "名称",
