@@ -27,9 +27,14 @@ type Operation struct {
 
 // Action 是用于操作元素的结构体
 type Action struct {
-	Input       string `yaml:"input" json:"input"`
-	Interactive string `yaml:"interactive" json:"interactive"` // 操作类型 click, input, enter, select, scroll, hover, right_click, double_click, drag_and_drop, drag_and_drop_by_offset, press, type, upload_file
-	Coordinates []int  `yaml:"coordinates" json:"coordinates"`
+	Input       string      `yaml:"input" json:"input"`
+	Interactive string      `yaml:"interactive" json:"interactive"` // 操作类型 click, input, enter, select, scroll, hover, right_click, double_click, drag_and_drop, drag_and_drop_by_offset, press, type, upload_file
+	Coordinates Coordinates `yaml:"coordinates" json:"coordinates"`
+}
+
+type Coordinates struct {
+	X float64
+	Y float64
 }
 
 // Assert 是用于断言的结构体
